@@ -3,32 +3,20 @@ from scipy import stats as sps
 import numpy as np
 import pandas as pd
 import requests
+import io
 
 
-def download_patient_data(file_path=None):
-    """ Downloads patient data to data directory
-        from: https://stackoverflow.com/questions/16694907/ """
-    if not file_path:
-        file_path = os.path.join(os.path.dirname(__file__), "../data/patients.tar.gz")
-    url = "https://github.com/beoutbreakprepared/nCoV2019/raw/master/latest_data/latestdata.tar.gz"
-    with requests.get(url, stream=True) as r:
-        r.raise_for_status()
-        with open(file_path, "wb") as f:
-            for chunk in r.iter_content(chunk_size=8192):
-                if chunk:  # filter out keep-alive new chunks
-                    f.write(chunk)
-
-
-def get_patient_data(file_path=None, max_delay=60):
+def get_patient_data(max_delay=60):
     """ Finds every valid delay between symptom onset and report confirmation
         from the patient line list and returns all the delay samples. """
-    if not file_path:
-        file_path = os.path.join(os.path.dirname(__file__), "../data/patients.tar.gz")
+    url = "https://github.com/beoutbreakprepared/nCoV2019/raw/master/latest_data/latestdata.tar.gz"
+    r = requests.get(url)
+
     patients = pd.read_csv(
-        file_path,
+        io.BytesIO(r.content), compression="gzip",
         parse_dates=False,
         usecols=["country", "date_onset_symptoms", "date_confirmation"],
-        low_memory=False,
+        low_memory=False, skiprows=1,
     )
 
     patients.columns = ["Country", "Onset", "Confirmed"]
@@ -66,8 +54,8 @@ def get_patient_data(file_path=None, max_delay=60):
     return patients
 
 
-def get_delays_from_patient_data(file_path=None, max_delay=60):
-    patients = get_patient_data(file_path=file_path, max_delay=max_delay)
+def get_delays_from_patient_data(max_delay=60):
+    patients = get_patient_data(max_delay=max_delay)
     delays = (patients.Confirmed - patients.Onset).dt.days
     delays = delays.reset_index(drop=True)
     delays = delays[delays.le(max_delay)]
@@ -84,7 +72,7 @@ def get_delay_distribution():
     INCUBATION_DAYS = 5
 
     try:
-        p_delay_path = os.path.join(os.path.dirname(__file__), "../data/p_delay.csv")
+        p_delay_path = os.path.expanduser("~/.local/share/rtlive/p_delay.csv")
         p_delay = pd.read_csv(p_delay_path, squeeze=True)
     except FileNotFoundError:
         delays = get_delays_from_patient_data()
@@ -97,6 +85,6 @@ def get_delay_distribution():
             .append(p_delay, ignore_index=True)
             .rename("p_delay")
         )
-        p_delay.to_csv("data/p_delay.csv", index=False)
+        p_delay.to_csv(os.path.expanduser("~/.local/share/rtlive/p_delay.csv"), index=False)
 
     return p_delay
