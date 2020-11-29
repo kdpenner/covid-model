@@ -12,7 +12,7 @@ import theano
 import theano.tensor as tt
 from theano.tensor.signal.conv import conv2d
 
-from covid.patients import get_delay_distribution
+from covid.patients import get_fitted_delay_distribution
 
 
 class GenerativeModel:
@@ -79,15 +79,19 @@ class GenerativeModel:
     def _get_generation_time_interval(self):
         """ Create a discrete P(Generation Interval)
             Source: https://www.ijidonline.com/article/S1201-9712(20)30119-3/pdf """
-        mean_si = 4.7
-        std_si = 2.9
-        mu_si = np.log(mean_si ** 2 / np.sqrt(std_si ** 2 + mean_si ** 2))
-        sigma_si = np.sqrt(np.log(std_si ** 2 / mean_si ** 2 + 1))
-        dist = sps.lognorm(scale=np.exp(mu_si), s=sigma_si)
+        #mean_si = 4.7
+        #std_si = 2.9
+        #mu_si = np.log(mean_si ** 2 / np.sqrt(std_si ** 2 + mean_si ** 2))
+        #sigma_si = np.sqrt(np.log(std_si ** 2 / mean_si ** 2 + 1))
+        #dist = sps.lognorm(scale=np.exp(mu_si), s=sigma_si)
+
+        alpha = 9.89
+        beta = 2.06
+        gamma_dist = sps.gamma(a=alpha, scale=1./beta)
 
         # Discretize the Generation Interval up to 20 days max
         g_range = np.arange(0, 20)
-        gt = pd.Series(dist.cdf(g_range), index=g_range)
+        gt = pd.Series(gamma_dist.cdf(g_range), index=g_range)
         gt = gt.diff().fillna(0)
         gt /= gt.sum()
         gt = gt.values
@@ -112,7 +116,7 @@ class GenerativeModel:
     def build(self):
         """ Builds and returns the Generative model. Also sets self.model """
 
-        p_delay = get_delay_distribution()
+        p_delay = get_fitted_delay_distribution()
         nonzero_days = self.observed.total.gt(0)
         len_observed = len(self.observed)
         convolution_ready_gt = self._get_convolution_ready_gt(len_observed)

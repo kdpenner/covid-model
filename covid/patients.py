@@ -62,7 +62,7 @@ def get_delays_from_patient_data(max_delay=60):
     return delays
 
 
-def get_delay_distribution():
+def get_emp_delay_distribution():
     """ Returns the empirical delay distribution between symptom onset and
         confirmed positive case. """
 
@@ -88,3 +88,13 @@ def get_delay_distribution():
         p_delay.to_csv(os.path.expanduser("~/.local/share/rtlive/p_delay.csv"), index=False)
 
     return p_delay
+
+def get_fitted_delay_distribution():
+    """ Infection to positive test """
+    meanlog = 1.68
+    sdlog = 0.92
+    ps1 = sps.lognorm.cdf(np.arange(0, 70), s=sdlog, scale=np.exp(meanlog))
+    ps = np.zeros(len(ps1))
+    ps[1:] = np.diff(ps1)
+    ps /= ps.sum()
+    return ps
