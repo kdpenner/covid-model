@@ -18,7 +18,7 @@ from covid.patients import get_fitted_delay_distribution
 class GenerativeModel:
     version = "1.0.0"
 
-    def __init__(self, region: str, observed: pd.DataFrame, buffer_days=10):
+    def __init__(self, observed: pd.DataFrame, buffer_days=10):
         """ Takes a region (ie State) name and observed new positive and
             total test counts per day. buffer_days is the default number of
             blank days we pad on the leading edge of the time series because
@@ -38,7 +38,6 @@ class GenerativeModel:
         self._inference_data = None
         self.model = None
         self.observed = observed
-        self.region = region
 
     @property
     def n_divergences(self):
