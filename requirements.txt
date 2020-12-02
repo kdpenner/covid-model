@@ -1,12 +1,9 @@
 pymc3 >=3.9.2
 arviz >=0.9.0
 pandas
-jupyterlab
 numpy
 scipy
 mkl
 mkl-service
-boto3
-paramiko
-s3fs
-seaborn
+requests
+theano
