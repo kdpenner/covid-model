@@ -1,0 +1,13 @@
+name: rtlive
+channels:
+  - conda-forge
+dependencies:
+  - pymc3=3.9.3
+  - arviz>=0.9.0
+  - pandas
+  - numpy
+  - scipy
+  - mkl
+  - mkl-service
+  - requests
+  - theano

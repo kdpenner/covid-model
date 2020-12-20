@@ -15,7 +15,7 @@
 #!/usr/bin/env python3
 
 from codecs import open
-from os.path import realpath, dirname, join
+from os.path import join
 from setuptools import setup, find_packages
 import re
 
@@ -37,14 +37,6 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Mathematics",
     "Operating System :: OS Independent",
 ]
-
-PROJECT_ROOT = dirname(realpath(__file__))
-
-REQUIREMENTS_FILE = join(PROJECT_ROOT, "requirements.txt")
-
-with open(REQUIREMENTS_FILE) as f:
-    install_reqs = f.read().splitlines()
-
 
 def get_version():
     VERSIONFILE = join("covid", "__init__.py")
@@ -69,5 +61,4 @@ if __name__ == "__main__":
         include_package_data=True,
         classifiers=classifiers,
         python_requires=">=3.7",
-        install_requires=install_reqs,
     )
