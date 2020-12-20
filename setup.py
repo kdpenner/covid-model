@@ -12,17 +12,17 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-#!/usr/bin/env python
+#!/usr/bin/env python3
+
 from codecs import open
 from os.path import realpath, dirname, join
 from setuptools import setup, find_packages
 import re
 
 DISTNAME = "rtlive"
-DESCRIPTION = "Model powering rt.live"
-AUTHOR = "Kevin Systrom, Thomas Vladeck"
-AUTHOR_EMAIL = "k@systrom.com"
-URL = "https://github.com/rtcovidlive/covid-model/"
+DESCRIPTION = "Modified rt.live model"
+AUTHOR = "Kyle Penner"
+URL = "https://github.com/kdpenner/covid-model/tree/kpmods"
 LICENSE = "Apache License, Version 2.0"
 
 classifiers = [
@@ -40,16 +40,10 @@ classifiers = [
 
 PROJECT_ROOT = dirname(realpath(__file__))
 
-# Get the long description from the README file
-with open(join(PROJECT_ROOT, "README.md"), encoding="utf-8") as buff:
-    LONG_DESCRIPTION = buff.read()
-
 REQUIREMENTS_FILE = join(PROJECT_ROOT, "requirements.txt")
 
 with open(REQUIREMENTS_FILE) as f:
     install_reqs = f.read().splitlines()
-
-test_reqs = ["pytest"]
 
 
 def get_version():
@@ -68,15 +62,12 @@ if __name__ == "__main__":
         name=DISTNAME,
         version=get_version(),
         maintainer=AUTHOR,
-        maintainer_email=AUTHOR_EMAIL,
         description=DESCRIPTION,
         license=LICENSE,
         url=URL,
-        long_description=LONG_DESCRIPTION,
         packages=find_packages(),
         include_package_data=True,
         classifiers=classifiers,
         python_requires=">=3.7",
         install_requires=install_reqs,
-        tests_require=test_reqs,
     )
