@@ -51,6 +51,7 @@ class GenerativeModel:
         _inference_data = az.from_pymc3(
             trace=self.trace,
             posterior_predictive=posterior_predictive,
+            model=self.model,
         )
         _inference_data.posterior.attrs["model_version"] = self.version
 
